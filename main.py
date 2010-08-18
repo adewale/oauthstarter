@@ -36,17 +36,22 @@ class UserToken(db.Model):
     access_token_string  = db.StringProperty()
 
     def get_request_token(self):
+        "Returns request token as a dictionary of tokens including oauth_token, oauth_token_secret and oauth_callback_confirmed."
         return eval(self.request_token_string)
 
     def set_access_token(self, access_token):
         access_token_string = repr(access_token)
         self.access_token_string = access_token_string
 
+    def get_access_token(self):
+        "Returns access token as a dictionary of tokens including consumer_key, consumer_secret, oauth_token and oauth_token_secret"
+        return eval(self.access_token_string)
+
     @staticmethod
     def create_user_token(request_token):
         user = users.get_current_user()
         request_token_string = repr(request_token)
-        return UserToken(key_name=user.user_id(), request_token_string=request_token_string)
+        return UserToken(key_name=user.user_id(), request_token_string=request_token_string, access_token_string='')
 
     @staticmethod
     def get_current_user_token():
@@ -111,7 +116,13 @@ class ProfileViewingHandler(webapp.RequestHandler):
     @login_required
     def get(self):
         user_token = UserToken.get_current_user_token()
-        template_values = {'access_token' : user_token.access_token_string}
+        client = buzz_gae_client.BuzzGaeClient(CONSUMER_KEY, CONSUMER_SECRET)
+        api_client = client.build_api_client(user_token.get_access_token())
+        user_profile_data = api_client.people().get(userId='@me')
+
+        template_values = {}
+        template_values['user_profile_data'] = user_profile_data
+        template_values['access_token'] = user_token.access_token_string
         path = os.path.join(os.path.dirname(__file__), 'profile.html')
 	self.response.out.write(template.render(path, template_values))
 

@@ -7,10 +7,14 @@
 <body>
 <h1>Testing OAuth</h1>
 <hr></hr>
-<h1>Access Token is: {{ access_token }}</h1>
-
-
+Hello {{ user_profile_data.displayName }}<br>
+<img src="{{ user_profile_data.photos.1.value }}">
 
 <hr></hr>
-<!-- hhmts start --> Last modified: Wed Aug 18 00:11:50 BST 2010 <!-- hhmts end -->
+<h1>Access Token is: {{ access_token }}</h1>
+
+<h1>Profile Data: {{ user_profile_data }}</h1>
+
+<hr></hr>
+<!-- hhmts start --> Last modified: Wed Aug 18 19:53:04 BST 2010 <!-- hhmts end -->
 </body> </html>
