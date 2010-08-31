@@ -28,6 +28,8 @@ import os
 
 CONSUMER_KEY = 'anonymous'
 CONSUMER_SECRET = 'anonymous'
+
+# Change this for your application.
 CALLBACK_URL = 'http://oauthisa4letterword.appspot.com/finish_dance'
 
 
@@ -35,6 +37,7 @@ class UserToken(db.Model):
     # The user_id is the key_name so we don't have to make it an explicit property
     request_token_string = db.StringProperty()
     access_token_string  = db.StringProperty()
+    email_address = db.StringProperty()
 
     def get_request_token(self):
         "Returns request token as a dictionary of tokens including oauth_token, oauth_token_secret and oauth_callback_confirmed."
@@ -51,8 +54,15 @@ class UserToken(db.Model):
     @staticmethod
     def create_user_token(request_token):
         user = users.get_current_user()
+        user_id = user.user_id()
         request_token_string = repr(request_token)
-        return UserToken(key_name=user.user_id(), request_token_string=request_token_string, access_token_string='')
+
+        # TODO(ade) Support users who sign in to AppEngine with a federated identity aka OpenId
+        email = user.email()
+
+        logging.info('Creating user token: key_name: %s request_token_string: %s email_address: %s' % (user_id, request_token_string, email))
+        
+        return UserToken(key_name=user_id, request_token_string=request_token_string, access_token_string='', email_address=email)
 
     @staticmethod
     def get_current_user_token():
