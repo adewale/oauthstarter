@@ -1,0 +1,5 @@
+This is a simple AppEngine project that walks you through the 'OAuth dance' on AppEngine and leaves you with a datastore with a stored token.
+
+It's not big and it's not clever but it tries to be simple.
+
+You can see what it looks like on http://oauthisa4letterword.appspot.com
