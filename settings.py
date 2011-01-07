@@ -21,15 +21,16 @@ API_KEY = 'AIzaSyDSMX3UNdWWobl3k_eml_yAXfmJZzldfLg'
 
 ADMIN_PROFILE_URL = 'http://profiles.google.com/adewale'
 
-# Buzz Chat Bot settings
-# OAuth consumer key and secret - you should change these to 'anonymous' unless you really are buzzchatbot.appspot.com
-# Alternatively you could go here: https://www.google.com/accounts/ManageDomains and register your instance so that
+# OAuth consumer key and secret
+# Go here: https://www.google.com/accounts/ManageDomains and register your instance so that
 # you'll get your own consumer key and consumer secret
-#CONSUMER_KEY = 'buzzchatbot.appspot.com'
-#CONSUMER_SECRET = 'tcw1rCMgLVY556Y0Q4rW/RnK'
 CONSUMER_KEY = 'anonymous'
 CONSUMER_SECRET = 'anonymous'
 
+DISPLAY_NAME = 'OAuth Is A 4 Letter Word'
+
+OAUTH_RETURN_URL = '/finish_dance'
 PROFILE_HANDLER_URL = '/profile'
 FRONT_PAGE_HANDLER_URL = '/'
+
 # Installation specific config ends.
