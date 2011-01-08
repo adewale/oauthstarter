@@ -119,21 +119,6 @@ class TokenDeletionHandler(webapp.RequestHandler):
     self.redirect(settings.FRONT_PAGE_HANDLER_URL)
 
 
-class DanceFinishingHandler(webapp.RequestHandler):
-  def get(self):
-    logging.info("Request body %s" % self.request.body)
-    user = users.get_current_user()
-    logging.debug('Finished OAuth dance for: %s' % user.email())
-
-    f = Flow.get_by_key_name(user.user_id())
-    if f:
-      credentials = f.flow.step2_exchange(self.request.params)
-      c = Credentials(key_name=user.user_id(), credentials=credentials)
-      c.put()
-      f.delete()
-
-    self.redirect(settings.PROFILE_HANDLER_URL)
-
 def make_wrapper(email_address):
   user_token = UserToken.find_by_email_address(email_address)
   if user_token:

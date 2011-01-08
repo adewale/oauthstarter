@@ -12,27 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.appengine.api import users
-from google.appengine.ext import db
-from google.appengine.ext import deferred
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.api import urlfetch
-from google.appengine.api import users
 
 import buzz_appengine
-import buzz_gae_client
 import logging
 import oauth_handlers
 import os
 
-CONSUMER_KEY = 'anonymous'
-CONSUMER_SECRET = 'anonymous'
-
-# Change this for your application.
-CALLBACK_URL = 'http://oauthisa4letterword.appspot.com/finish_dance'
 
 class WelcomeHandler(webapp.RequestHandler):
     def get(self):
@@ -58,7 +46,6 @@ class ProfileViewingHandler(webapp.RequestHandler):
 application = webapp.WSGIApplication([
 ('/', WelcomeHandler),
 ('/delete_tokens', oauth_handlers.TokenDeletionHandler),
-('/finish_dance', oauth_handlers.DanceFinishingHandler),
 ('/profile', ProfileViewingHandler)],
   debug = True)
 

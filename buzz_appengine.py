@@ -56,14 +56,15 @@ def oauth_required(handler_method):
         credentials = f.flow.step2_exchange(self.request.params)
         c = Credentials(key_name=user.user_id(), credentials=credentials)
         c.put()
+        
+        # We delete the flow so that a malicious actor can't pretend to be the OAuth service
+        # and replace a valid token with an invalid token
         f.delete()
       handler_method(self, *args)
       return 
 
     # Find out who the user is. If we don't know who you are then we can't 
     # look up your OAuth credentials.
-    # TODO(ade) Look up the user's id in a cookie first then fallback to 
-    # appengine login.
     user = users.get_current_user()
     if not user:
       self.redirect(users.create_login_url(self.request.uri))
@@ -71,7 +72,8 @@ def oauth_required(handler_method):
     
     # If we know the user then look up their OAuth credentials
     if not Credentials.get_by_key_name(user.user_id()):
-      #TODO(ade) make this configurable via settings.py rather than hardcoded to Buzz
+      # TODO(ade) make this configurable via settings.py rather than hardcoded to Buzz
+      # Domain, and scope should be configurable
       p = apiclient.discovery.build("buzz", "v1")
       flow = apiclient.oauth.FlowThreeLegged(p.auth_discovery(),
                      consumer_key=settings.CONSUMER_KEY,
@@ -91,5 +93,7 @@ def oauth_required(handler_method):
       
       self.redirect(authorize_url)
       return
+    
+    # If the user already has a token then call the wrapped handler
     handler_method(self, *args)
   return check_oauth_credentials
