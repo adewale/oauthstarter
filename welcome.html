@@ -7,7 +7,11 @@
 <body>
 <h1>Testing OAuth</h1>
 <h2>Welcome</h2>
-<h2><a href="/profile">See your profile</a></h2>
+
+<!-- The unused parameters are here to show that the oauth_required decorator 
+	honours parameters in the original request
+-->
+<h2><a href="/profile?foo=bar">See your profile</a></h2>
 
 <hr></hr>
 </body> </html>

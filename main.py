@@ -22,6 +22,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
 from google.appengine.api import users
 
+import buzz_appengine
 import buzz_gae_client
 import logging
 import oauth_handlers
@@ -42,7 +43,7 @@ class WelcomeHandler(webapp.RequestHandler):
 
 
 class ProfileViewingHandler(webapp.RequestHandler):
-  @oauth_handlers.oauth_required
+  @buzz_appengine.oauth_required
   def get(self):
     buzz_wrapper = oauth_handlers.build_buzz_wrapper_for_current_user()
     user_profile_data = buzz_wrapper.get_profile()
