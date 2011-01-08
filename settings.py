@@ -19,7 +19,6 @@
 # https://code.google.com/apis/console
 API_KEY = 'AIzaSyDSMX3UNdWWobl3k_eml_yAXfmJZzldfLg'
 
-ADMIN_PROFILE_URL = 'http://profiles.google.com/adewale'
 
 # OAuth consumer key and secret
 # Go here: https://www.google.com/accounts/ManageDomains and register your instance so that
@@ -28,9 +27,5 @@ CONSUMER_KEY = 'anonymous'
 CONSUMER_SECRET = 'anonymous'
 
 DISPLAY_NAME = 'OAuth Is A 4 Letter Word'
-
-OAUTH_RETURN_URL = '/finish_dance'
-PROFILE_HANDLER_URL = '/profile'
-FRONT_PAGE_HANDLER_URL = '/'
 
 # Installation specific config ends.
