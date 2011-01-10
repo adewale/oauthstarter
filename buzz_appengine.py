@@ -18,6 +18,8 @@ from google.appengine.ext import db
 import apiclient.ext.appengine
 import logging
 import settings
+import simple_buzz_wrapper
+
 
 class Flow(db.Model):
   flow = apiclient.ext.appengine.FlowThreeLeggedProperty()
@@ -25,6 +27,7 @@ class Flow(db.Model):
 
 class Credentials(db.Model):
   credentials = apiclient.ext.appengine.OAuthCredentialsProperty()
+
 
 def oauth_required(handler_method):
   """A decorator to require that a user has gone through the OAuth dance before accessing a handler.
@@ -98,3 +101,9 @@ def oauth_required(handler_method):
     # If the user already has a token then call the wrapped handler
     handler_method(self, *args)
   return check_oauth_credentials
+
+def build_buzz_wrapper_for_current_user():
+  user = users.get_current_user()
+  credentials = Credentials.get_by_key_name(user.user_id()).credentials
+  return simple_buzz_wrapper.SimpleBuzzWrapper(api_key=settings.API_KEY, 
+                                                 credentials=credentials)
