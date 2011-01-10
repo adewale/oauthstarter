@@ -64,15 +64,16 @@ def oauth_required(handler_method):
       return 
 
     # Find out who the user is. If we don't know who you are then we can't 
-    # look up your OAuth credentials.
+    # look up your OAuth credentials thus we must ensure the user is logged in.
     user = users.get_current_user()
     if not user:
       self.redirect(users.create_login_url(self.request.uri))
       return
     
-    # If we know the user then look up their OAuth credentials
+    # Now that we know who the user is look up their OAuth credentials
+    # if we don't find the credentials then send them through the OAuth dance
     if not Credentials.get_by_key_name(user.user_id()):
-      # TODO(ade) make this configurable via settings.py rather than hardcoded to Buzz
+      # TODO(ade) make this more configurable using settings.py
       # Domain, and scope should be configurable
       p = apiclient.discovery.build("buzz", "v1")
       flow = apiclient.oauth.FlowThreeLegged(p.auth_discovery(),

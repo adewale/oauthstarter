@@ -13,11 +13,9 @@
 # limitations under the License.
 
 from google.appengine.api import users
-from google.appengine.api import xmpp
 from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import login_required
 
 import apiclient.oauth
 import apiclient.discovery
@@ -29,106 +27,6 @@ import os
 import settings
 import simple_buzz_wrapper
 
-class UserToken(db.Model):
-# The user_id is the key_name so we don't have to make it an explicit property
-  request_token_string = db.StringProperty()
-  access_token_string = db.StringProperty()
-  email_address = db.StringProperty()
-
-  def get_request_token(self):
-    "Returns request token as a dictionary of tokens including oauth_token, oauth_token_secret and oauth_callback_confirmed."
-    return eval(self.request_token_string)
-
-  def set_access_token(self, access_token):
-    access_token_string = repr(access_token)
-    self.access_token_string = access_token_string
-
-  def get_access_token(self):
-    "Returns access token as a dictionary of tokens including consumer_key, consumer_secret, oauth_token and oauth_token_secret"
-    return eval(self.access_token_string)
-
-  @staticmethod
-  def create_user_token(request_token):
-    user = users.get_current_user()
-    user_id = user.user_id()
-    request_token_string = repr(request_token)
-
-    # TODO(ade) Support users who sign in to AppEngine with a federated identity aka OpenId
-    email = user.email().lower()
-
-    logging.info('Creating user token: key_name: %s request_token_string: %s email_address: %s' % (
-    user_id, request_token_string, email))
-
-    return UserToken(key_name=user_id, request_token_string=request_token_string, access_token_string='',
-                     email_address=email)
-
-  @staticmethod
-  def get_current_user_token():
-    user = users.get_current_user()
-    user_token = UserToken.get_by_key_name(user.user_id())
-    return user_token
-
-  @staticmethod
-  def access_token_exists():
-    user = users.get_current_user()
-    user_token = UserToken.get_by_key_name(user.user_id())
-    logging.info('user_token: %s' % user_token)
-    return user_token and user_token.access_token_string
-
-  @staticmethod
-  def find_by_email_address(email_address):
-    user_tokens = UserToken.gql('WHERE email_address = :1', email_address).fetch(1)
-    if user_tokens:
-      return user_tokens[0] # The result of the query is a list
-    else:
-      return None
-
-class DanceStartingHandler(webapp.RequestHandler):
-  @login_required
-  def get(self):
-    logging.info('Request body %s' % self.request.body)
-    user = users.get_current_user()
-    logging.debug('Started OAuth dance for: %s' % user.email())
-
-    template_values = {}
-    if UserToken.access_token_exists():
-      template_values['access_token_exists'] = 'true'
-    else:
-    # Generate the request token
-      client = buzz_gae_client.BuzzGaeClient(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
-      request_token = client.get_request_token(self.request.host_url + '/finish_dance')
-      logging.info('Request token: %s' % request_token)
-
-      # Create the request token and associate it with the current user
-      user_token = UserToken.create_user_token(request_token)
-      UserToken.put(user_token)
-
-      authorisation_url = client.generate_authorisation_url(request_token)
-      logging.info('Authorisation URL is: %s' % authorisation_url)
-      template_values['destination'] = authorisation_url
-
-    path = os.path.join(os.path.dirname(__file__), 'start_dance.html')
-    self.response.out.write(template.render(path, template_values))
-
-
-class TokenDeletionHandler(webapp.RequestHandler):
-  def post(self):
-    user = users.get_current_user()
-    credentials = buzz_appengine.Credentials.get_by_key_name(user.user_id())
-    credentials.delete()
-    self.redirect(settings.FRONT_PAGE_HANDLER_URL)
-
-
-def make_wrapper(email_address):
-  user_token = UserToken.find_by_email_address(email_address)
-  if user_token:
-    oauth_params_dict = user_token.get_access_token()
-    return simple_buzz_wrapper.SimpleBuzzWrapper(api_key=settings.API_KEY, consumer_key=oauth_params_dict['consumer_key'],
-      consumer_secret=oauth_params_dict['consumer_secret'], oauth_token=oauth_params_dict['oauth_token'], 
-      oauth_token_secret=oauth_params_dict['oauth_token_secret'])
-  else:
-    return simple_buzz_wrapper.SimpleBuzzWrapper(api_key=settings.API_KEY)
-
 
 def build_buzz_wrapper_for_current_user():
   user = users.get_current_user()
@@ -137,9 +35,6 @@ def build_buzz_wrapper_for_current_user():
   #http = httplib2.Http()
   #http = c.credentials.authorize(http)
   return simple_buzz_wrapper.SimpleBuzzWrapper(api_key=settings.API_KEY, 
-                                              oauth_token=credentials.token.key, 
-                                              oauth_token_secret=credentials.token.secret,
-                                              consumer_key=credentials.consumer.key,
-                                              consumer_secret=credentials.consumer.secret)
+                                              credentials=credentials)
   
   

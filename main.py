@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -43,9 +44,17 @@ class ProfileViewingHandler(webapp.RequestHandler):
     self.response.out.write(template.render(path, template_values))
 
 
+class TokenDeletionHandler(webapp.RequestHandler):
+  def post(self):
+    user = users.get_current_user()
+    credentials = buzz_appengine.Credentials.get_by_key_name(user.user_id())
+    credentials.delete()
+    self.redirect('/')
+
+
 application = webapp.WSGIApplication([
 ('/', WelcomeHandler),
-('/delete_tokens', oauth_handlers.TokenDeletionHandler),
+('/delete_tokens', TokenDeletionHandler),
 ('/profile', ProfileViewingHandler)],
   debug = True)
 
