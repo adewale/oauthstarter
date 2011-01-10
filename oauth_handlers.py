@@ -28,13 +28,6 @@ import settings
 import simple_buzz_wrapper
 
 
-def build_buzz_wrapper_for_current_user():
-  user = users.get_current_user()
-  credentials = buzz_appengine.Credentials.get_by_key_name(user.user_id()).credentials
-  #TODO(ade) This is a much simpler solution
-  #http = httplib2.Http()
-  #http = c.credentials.authorize(http)
-  return simple_buzz_wrapper.SimpleBuzzWrapper(api_key=settings.API_KEY, 
-                                              credentials=credentials)
+
   
   
