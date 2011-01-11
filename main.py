@@ -20,6 +20,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 import buzz_appengine
 import logging
 import os
+import settings
 
 
 class WelcomeHandler(webapp.RequestHandler):
@@ -31,9 +32,9 @@ class WelcomeHandler(webapp.RequestHandler):
 
 
 class ProfileViewingHandler(webapp.RequestHandler):
-  @buzz_appengine.oauth_required
+  @buzz_appengine.oauth_required(scope='https://www.googleapis.com/auth/buzz.readonly', xoauth_display_name=settings.DISPLAY_NAME)
   def get(self):
-    buzz_wrapper = buzz_appengine.build_buzz_wrapper_for_current_user()
+    buzz_wrapper = buzz_appengine.build_buzz_wrapper_for_current_user(settings.API_KEY)
     user_profile_data = buzz_wrapper.get_profile()
 
     logging.info('Showing profile for %s' % user_profile_data['displayName'])

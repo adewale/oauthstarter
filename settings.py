@@ -26,6 +26,6 @@ API_KEY = 'AIzaSyDSMX3UNdWWobl3k_eml_yAXfmJZzldfLg'
 CONSUMER_KEY = 'anonymous'
 CONSUMER_SECRET = 'anonymous'
 
-DISPLAY_NAME = 'OAuth Is A 4 Letter Word'
+DISPLAY_NAME = 'OAuth Is A 4 Letter Word!'
 
 # Installation specific config ends.
