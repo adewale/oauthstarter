@@ -34,7 +34,7 @@ class WelcomeHandler(webapp.RequestHandler):
 class ProfileViewingHandler(webapp.RequestHandler):
   @buzz_appengine.oauth_required(scope='https://www.googleapis.com/auth/buzz.readonly')
   def get(self):
-    buzz_wrapper = buzz_appengine.build_buzz_wrapper_for_current_user(settings.API_KEY)
+    buzz_wrapper = buzz_appengine.build_buzz_wrapper_for_current_user()
     user_profile_data = buzz_wrapper.get_profile()
 
     logging.info('Showing profile for %s' % user_profile_data['displayName'])
